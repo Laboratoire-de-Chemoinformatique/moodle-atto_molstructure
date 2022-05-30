@@ -1,0 +1,101 @@
+<!doctype html>
+<html style="margin: 0;">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link rel="stylesheet" href="ChemDoodle/ChemDoodleWeb.css" type="text/css">
+    <link rel="stylesheet" href="ChemDoodle/uis/jquery-ui-1.11.4.css" type="text/css">
+    <script type="text/javascript" src="ChemDoodle/uis/jquery-1.11.3.min.js">  </script>
+    <script type="text/javascript" src="ChemDoodle/ChemDoodleWeb-simple.js"></script>
+    <script type="text/javascript" src="ChemDoodle/uis/ChemDoodleWeb-uis-simple.js"></script>
+    <title>Sketch and save</title>
+</head>
+
+<body>
+    <div class="wrapper" style="text-align: center">
+
+        <div class="drawing_canvas-container">
+            <canvas id="sketcher"></canvas><br><br>
+        </div>
+
+        <div class="inputs_size">
+            <div class="input_width">
+                <label id ="label_width_input_molstructure" for="width_input_molstructure">  </label>
+                <input type="number" id="width_input_molstructure" name="width" max="500" min="10" step="5"> <br><br>
+            </div>
+
+            <div class="input_height">
+                <label id ="label_height_input_molstructure" for="height_input_molstructure">  </label>
+                <input type="number" id="height_input_molstructure" name="height" max="500" min="10" step="5"><br><br>
+            </div>
+
+        </div>
+
+        <div class="button_size">
+            <button id="button-size-button" onclick="function_resize()">   </button><br><br>
+        </div>
+
+
+        <div class="viewer_canvas-container">
+            <canvas id="sketcher-viewer-atto"></canvas>
+        </div>
+
+    </div>
+</body>
+
+<script>
+    ChemDoodle.ELEMENT['H'].jmolColor = 'black';
+    ChemDoodle.ELEMENT['S'].jmolColor = '#B9A130';
+    // Main ketcher.
+    const sketcher = new ChemDoodle.SketcherCanvas('sketcher', 400, 300,{useServices:false, requireStartingAtom: false});
+    // We init the ketcher with an empty molecule object.
+    let initmol = ChemDoodle.readJSON("{\"m\":[{\"a\":[]}]}");
+    sketcher.styles.atoms_displayTerminalCarbonLabels_2D = true;
+    sketcher.styles.atoms_useJMOLColors = true;
+    sketcher.styles.bonds_clearOverlaps_2D = true;
+    sketcher.repaint();
+
+    // Preview ketcher.
+    const sketcher_viewer = new ChemDoodle.ViewerCanvas('sketcher-viewer-atto', 100, 100);
+    sketcher_viewer.emptyMessage = 'No data loaded';
+    sketcher.oldFunc = sketcher.checksOnAction;
+
+    /*   Refactor the function, in order for the preview ketcher to be a copy of the main ketcher,
+         updated at every modification of the main ketcher. */
+    sketcher.checksOnAction = function(force){
+        this.oldFunc(force);
+        //sketcher.repaint();
+        let mols = sketcher.molecules;
+        let forms = sketcher.shapes;
+        sketcher_viewer.loadContent(mols, forms);
+        sketcher.center();
+        for ( let i = 0, ii = this.molecules.length; i < ii; i++) {
+            this.molecules[i].check();
+        }
+    }
+
+    /*  Button activated function, checks for the values of width and height in the input elements.
+        If empty, uses the default value. */
+    function function_resize(){
+        let input_width = document.getElementById('width_input_molstructure').valueAsNumber;
+        let input_height = document.getElementById('height_input_molstructure').valueAsNumber;
+        let width;
+        let height;
+
+        if(input_width > 0 ) {
+            width = input_width;
+        } else {
+            width = 100;
+        }
+
+        if(input_height > 0 ) {
+            console.log('inif');
+            height = input_height;
+        } else {
+            console.log('inelse');
+            height = 100;
+        }
+        sketcher_viewer.resize(width, height);
+    }
+</script>
+
+</html>

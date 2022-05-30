@@ -1,0 +1,10 @@
+{
+  "name": "moodle-atto_molstructure-button",
+  "builds": {
+    "moodle-atto_molstructure-button": {
+      "jsfiles": [
+        "button.js"
+      ]
+    }
+  }
+}
