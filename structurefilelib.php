@@ -17,9 +17,10 @@
 /**
  * structure settings.
  *
- * @package   atto_molstructure
- * @copyright  2014 onwards Carl LeBlond
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package atto_molstructure
+ * @copyright  2022 Unistra  {@link http://unistra.fr}
+ * @author Louis Plyer <louis.plyer@unistra.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 

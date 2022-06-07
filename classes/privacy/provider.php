@@ -16,8 +16,9 @@
 
 /**
  * Privacy Subsystem implementation for block_activity_modules.
- * @package    atto_molstructure
- * @copyright  2012 unistra  {@link http://unistra.fr}
+ * @package atto_molstructure
+ * @copyright  2022 Unistra  {@link http://unistra.fr}
+ * @author Louis Plyer <louis.plyer@unistra.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace atto_molstructure\privacy;

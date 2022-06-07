@@ -16,7 +16,8 @@ YUI.add('moodle-atto_molstructure-button', function (Y, NAME) {
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /*
  * @package    atto_molstructure
- * @copyright  2022 Louis Plyer
+ * @copyright  2022 Unistra  {@link http://unistra.fr}
+ * @author Louis Plyer <louis.plyer@unistra.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /**
@@ -50,7 +51,7 @@ var COMPONENTNAME = 'atto_molstructure',
         '<button class="{{CSS.INPUTSUBMIT}}" id ="{{submitID}}" style="{{selectalign}}">' +
         '{{get_string "insert" component}}' +
         '</button>' +
-        
+
         '</div>';
 
 Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_atto

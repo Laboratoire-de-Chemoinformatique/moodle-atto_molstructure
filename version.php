@@ -17,16 +17,18 @@
 /**
  * Folder plugin version information
  *
- * @package
- * @subpackage
- * @copyright  2012 unistra  {@link http://unistra.fr}
+ * @package atto_molstructure
+ * @copyright  2022 Unistra  {@link http://unistra.fr}
  * @author Louis Plyer <louis.plyer@unistra.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @license    http://www.cecill.info/licences/Licence_CeCILL_V2-en.html
  */
 defined('MOODLE_INTERNAL') || die();
 
 
-$plugin->version   = 2022040100;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2022060201;        // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2020060900;        // Requires this Moodle version.
 $plugin->component = 'atto_molstructure';  // Full name of the plugin (used for diagnostics).
+
+$plugin->maturity  = MATURITY_ALPHA;
+$plugin->release = 1.0;
+

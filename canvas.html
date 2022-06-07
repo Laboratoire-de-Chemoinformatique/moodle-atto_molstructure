@@ -56,6 +56,10 @@
 
     // Preview ketcher.
     const sketcher_viewer = new ChemDoodle.ViewerCanvas('sketcher-viewer-atto', 100, 100);
+    sketcher_viewer.styles.atoms_displayTerminalCarbonLabels_2D = true;
+    sketcher_viewer.styles.atoms_useJMOLColors = true;
+    sketcher_viewer.styles.bonds_clearOverlaps_2D = true;
+    //sketcher_viewer.repaint();
     sketcher_viewer.emptyMessage = 'No data loaded';
     sketcher.oldFunc = sketcher.checksOnAction;
 
