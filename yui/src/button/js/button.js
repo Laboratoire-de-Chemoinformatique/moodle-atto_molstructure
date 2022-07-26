@@ -35,7 +35,7 @@ var COMPONENTNAME = 'atto_molstructure',
     SUBMITID = 'submit',
     CSS = {
         INPUTSUBMIT: 'atto_media_urlentrysubmit',
-        HGT: 'height: 75vh;',
+        HGT: 'height: 68vh;',
         WDT: 'width: 48vw;'
     },
 
@@ -70,7 +70,7 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
             this._itemid = options.image.itemid;
         } else {
             Y.log(
-                'Plugin PoodLL Anywhere not available because itemid is missing.',
+                'Plugin MolStructure Anywhere not available because itemid is missing.',
                 'warn', LOGNAME);
             return;
         }
@@ -99,7 +99,7 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
     _displayDialogue: function (e, clickedicon) {
         var dialogue = this.getDialogue({
             headerContent: M.util.get_string('dialogtitle', COMPONENTNAME),
-            height: '90vh',
+            height: '94vh',
             width: '50vw',
             focusAfterHide: clickedicon
         });
@@ -155,40 +155,20 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
         return content;
     },
 
-    _uploadFile: function (filedata, recid, filename) {
+    _uploadFile: function (filedata, filename) {
         var xhr = new XMLHttpRequest();
-        var ext = "png";
-        // file received/failed
-        xhr.onreadystatechange = (function () {
-            return function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        var resp = xhr.responseText;
-                        var start = resp.indexOf(
-                            "success<error>");
-                        if (start < 1) {
-                            return;
-                        }
-                    }
-                }
-            };
-        })(this);
         var params = "datatype=uploadfile";
-        params += "&paramone=" + encodeURIComponent(filedata);
-        params += "&paramtwo=" + ext;
-        params += "&paramthree=image";
+        params += "&filedata=" + encodeURIComponent(filedata);
         params += "&requestid=" + filename;
         params += "&contextid=" + this._usercontextid;
-        params += "&component=user";
-        params += "&filearea=draft"; // change filearea
         params += "&itemid=" + this._itemid;
+        params += "&sesskey=" + M.cfg.sesskey;
         xhr.open("POST", M.cfg.wwwroot +
-            "/lib/editor/atto/plugins/molstructure/structurefilelib.php",
-            true);
+            "/lib/editor/atto/plugins/molstructure/structurefilelib.php");
         xhr.setRequestHeader("Content-Type",
             "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Cache-Control", "no-cache");
-        //xhr.setRequestHeader("Connection", "close");
+        xhr.setRequestHeader("Content-length", params.length);
         xhr.send(params);
     },
     _changeLangString: function (e) {
@@ -223,8 +203,8 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
             var buttoncontent = iframBody.contents();
             var button = buttoncontent.find('#sketcher-viewer-atto');
             var img_URL = button[0].toDataURL('image/svg');
-            // console.log(img_URL);
-            referringpage._uploadFile(img_URL, "1", filename);
+
+            referringpage._uploadFile(img_URL, filename);
             var wwwroot = M.cfg.wwwroot;
             var filesrc = wwwroot + '/draftfile.php/' + referringpage._usercontextid +
                 '/user/draft/' + referringpage._itemid + '/' + thefilename;

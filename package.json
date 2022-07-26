@@ -1,8 +1,0 @@
-{
-  "name": "atto_molstructure",
-  "dependencies": {
-    "grunt-contrib-jshint": "^3.2.0",
-    "grunt-contrib-uglify": "^5.2.1",
-    "grunt-exec": "^3.0.0"
-  }
-}

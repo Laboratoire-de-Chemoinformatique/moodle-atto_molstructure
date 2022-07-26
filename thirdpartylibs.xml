@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>ChemDoodle/</location>
+        <name>ChemDoodle</name>
+        <version>9.1.0</version>
+        <license>GNU GPL</license>
+        <licenseversion>3.0</licenseversion>
+    </library>
+</libraries>

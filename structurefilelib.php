@@ -20,144 +20,77 @@
  * @package atto_molstructure
  * @copyright  2022 Unistra  {@link http://unistra.fr}
  * @author Louis Plyer <louis.plyer@unistra.fr>
+ * inspired by atto_structure from Carl LeBlond
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once("../../../../../config.php");
+require_login();
+require_sesskey();
 
 global $CFG;
 
-if (!isset($CFG)) {
-    require_once("../../../../../config.php");
-}
-
 require_once($CFG->libdir . '/filelib.php');
+require_once($CFG->dirroot . '/lib/editor/atto/plugins/molstructure/lib.php');
 
-$datatype  = optional_param('datatype', "", PARAM_TEXT);
-$contextid = optional_param('contextid', 0, PARAM_INT);
-$courseid  = optional_param('courseid', 0, PARAM_INT);
-$moduleid  = optional_param('moduleid', 0, PARAM_INT);
-$comp      = optional_param('component', "", PARAM_TEXT);
-$farea     = optional_param('filearea', "", PARAM_TEXT);
-
-$itemid     = optional_param('itemid', 0, PARAM_INT); // The id of the module.
-$hash       = optional_param('hash', "", PARAM_TEXT); // File or dir hash.
+$datatype   = optional_param('datatype', "", PARAM_TEXT);
+$filedata   = optional_param('filedata', "", PARAM_TEXT); // Nature of value depends on datatype, maybe path.
 $requestid  = optional_param('requestid', "", PARAM_TEXT); // File or dir hash.
-$paramone   = optional_param('paramone', "", PARAM_TEXT); // Nature of value depends on datatype, maybe path.
-$paramtwo   = optional_param('paramtwo', "", PARAM_TEXT); // Nature of value depends on datatype, maybe protocol.
-$paramthree = optional_param('paramthree', "", PARAM_TEXT); // Nature of value depends on datatype, maybe filearea.
+$contextid  = optional_param('contextid', 0, PARAM_INT);
+$itemid     = optional_param('itemid', 0, PARAM_INT); // The id of the module.
 
 header("Content-type: text/xml");
 echo "<?xml version=\"1.0\"?>\n";
-$returnxml = uploadfile($paramone, $paramtwo, $paramthree, $requestid, $contextid, $comp, $farea, $itemid);
-echo $returnxml;
+
+global $CFG, $USER;
+// Setup our return object.
+$return = atto_molstructure_fetch_return_array(true);
+
+$fs       = get_file_storage();
+// Assume a root level filepath.
+$filepath = "/";
+$farea = "draft";
+$comp = "user";
+$mediatype = "image";
+$fileextension = "png";
+
+// Make our filerecord.
+$record            = new stdClass();
+$record->filearea  = $farea;
+$record->component = $comp;
+$record->filepath  = $filepath;
+$record->itemid    = $itemid;
+$record->license   = $CFG->sitedefaultlicense;
+$record->author    = fullname($USER);
+$record->contextid = $contextid;
+$record->userid    = $USER->id;
+$record->source    = '';
+
+$filenamebase = "upfile_" . $requestid . ".";
+
+$filename         = $filenamebase . $fileextension;
+$record->filename = $filename;
+
+if ($fs->file_exists($contextid, $comp, $farea, $itemid, $filepath, $filename)) {
+    // Delete any existing draft files!
+    $file = $fs->get_file($contextid, $comp, $farea, $itemid, $filepath, $filename);
+    $file->delete();
+    // Check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes!
+    array_push($return['messages'], "File already existed, it has been rewritten. " );
+}
+$xfiledata = atto_molstructure_prepare_base64($filedata);
+// Create the file!
+$storedfile = $fs->create_file_from_string($record, $xfiledata);
+// If successful return filename.
+if ($storedfile) {
+    array_push($return['messages'], "Stored the file with filename: " . $filename);
+} else {
+    $return['success'] = false;
+    array_push($return['messages'], "Unable to save file with filename:" . $filename); // If unsuccessful, return error.
+}
+// We process the result for return to browser.
+$xmloutput = atto_molstructure_prepare_xml_return($return, $requestid);
+
+// Return to widget/client the result of our file operation.
+echo $xmloutput;
 return;
-
-
- // For uploading a file direct from an HTML5.
-function uploadfile($filedata, $fileextension, $mediatype, $actionid, $contextid, $comp, $farea, $itemid) {
-    global $CFG, $USER;
-    // Setup our return object.
-    $return = fetch_return_array(true);
-    // Make sure nobodyapassed in a bogey file extension.
-    switch ($fileextension) {
-        case "png":
-            break;
-        default:
-            $fileextension = "mp3";
-    }
-    $fs       = get_file_storage();
-    // Assume a root level filepath.
-    $filepath = "/";
-    // Make our filerecord.
-    $record            = new stdClass();
-    $record->filearea  = $farea;
-    $record->component = $comp;
-    $record->filepath  = $filepath;
-    $record->itemid    = $itemid;
-    $record->license   = $CFG->sitedefaultlicense;
-    $record->author    = 'Moodle User';
-    $record->contextid = $contextid;
-    $record->userid    = $USER->id;
-    $record->source    = '';
-
-    $filenamebase = "upfile_" . $actionid . ".";
-
-    $filename         = $filenamebase . $fileextension;
-    $record->filename = $filename;
-    // If file already exists, raise an error!
-    if ($fs->file_exists($contextid, $comp, $farea, $itemid, $filepath, $filename)) {
-        if ($mediatype == 'image') {
-            // Delete any existing draft files!
-            $file = $fs->get_file($contextid, $comp, $farea, $itemid, $filepath, $filename);
-            $file->delete();
-            // Check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes!
-            $metapos = strpos($filedata, ",");
-            if ($metapos > 10 && $metapos < 30) {
-                $filedata = substr($filedata, $metapos + 1);
-            }
-            // Decode the data and store it!
-            $xfiledata   = base64_decode($filedata);
-            // Create the file!
-            $storedfile = $fs->create_file_from_string($record, $xfiledata);
-        } else {
-            $storedfile       = false;
-            $return['success'] = false;
-            array_push($return['messages'], "Already exists, file with filename:" . $filename);
-        }
-    } else {
-        /*check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes
-        if so it will look like this: data:image/png;base64,iVBORw0K
-        we remove it, there must be a better way of course ...  */
-        $metapos = strpos($filedata, ",");
-        if ($metapos > 10 && $metapos < 30) {
-            $filedata = substr($filedata, $metapos + 1);
-        }
-        // Decode the data and store it in memory.
-        $xfiledata   = base64_decode($filedata);
-        $storedfile = $fs->create_file_from_string($record, $xfiledata);
-    }
-    // If successful return filename.
-    if ($storedfile) {
-        array_push($return['messages'], $filename); // If unsuccessful, return error!
-    } else {
-        $return['success'] = false;
-        array_push($return['messages'], "Unable to save file with filename:" . $filename);
-    }
-    // We process the result for return to browser.
-    $xmloutput = prepare_xml_return($return, $actionid);
-    // Return to widget/client the result of our file operation.
-    return $xmloutput;
-}
-
-
-// Turns our results array into an xml string for returning to browser.
-function prepare_xml_return($resultarray, $requestid) {
-    // Set up xml to return.
-    $xmloutput = "<result requestid='" . $requestid . "'>";
-
-    if ($resultarray['success']) {
-        $xmloutput .= 'success';
-        // Not sure how this will impact attachment explorer .. (expects no messages here, but recorder expects..).
-        foreach ($resultarray['messages'] as $message) {
-            $xmloutput .= "<error>" . $message . "</error>";
-        }
-    } else {
-        $xmloutput .= 'failure';
-        foreach ($resultarray['messages'] as $message) {
-            $xmloutput .= '<error>' . $message . '</error>';
-        }
-    }
-
-    $xmloutput .= "</result>";
-    return $xmloutput;
-}
-
-
-// This initialises and returns a results array.
-function fetch_return_array($initsuccess = false) {
-    $return             = array();
-    $return['messages'] = array();
-    $return['success']  = $initsuccess;
-    return $return;
-}
-

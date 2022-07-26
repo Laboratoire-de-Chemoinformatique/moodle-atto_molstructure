@@ -57,3 +57,45 @@ function atto_molstructure_params_for_js($elementid, $options, $fpoptions) {
     $params['disabled'] = $disabled;
     return $params;
 }
+
+function atto_molstructure_prepare_xml_return($resultarray, $requestid) {
+    // Set up xml to return.
+    $xmloutput = "<result requestid='" . $requestid . "'>";
+
+    if ($resultarray['success']) {
+        $xmloutput .= 'success';
+        // Not sure how this will impact attachment explorer .. (expects no messages here, but recorder expects..).
+        foreach ($resultarray['messages'] as $message) {
+            $xmloutput .= "<message>" . $message . "</message>";
+        }
+    } else {
+        $xmloutput .= 'failure';
+        foreach ($resultarray['messages'] as $message) {
+            $xmloutput .= '<error>' . $message . '</error>';
+        }
+    }
+    $xmloutput .= "</result>";
+    return $xmloutput;
+}
+
+function atto_molstructure_fetch_return_array($initsuccess = false) {
+    $return             = array();
+    $return['messages'] = array();
+    $return['success']  = $initsuccess;
+    return $return;
+}
+
+
+function atto_molstructure_prepare_base64($filedata) {
+    /*check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes
+    if so it will look like this: data:image/png;base64,iVBORw0K
+    we remove it, there must be a better way of course ...  */
+
+    $metapos = strpos($filedata, ",");
+    if ($metapos > 10 && $metapos < 30) {
+        $filedata = substr($filedata, $metapos + 1);
+    }
+    // Decode the data.
+    $xfiledata = base64_decode($filedata);
+    return $xfiledata;
+}
