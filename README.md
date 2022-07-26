@@ -10,6 +10,6 @@ Moodle plugin allowing to add a chemical structure or reaction as an image witho
 
 - Céline Perves cperves@unistra.fr 
 
-Licence
+## Licence
 
 GNU GPL v3 or later 
