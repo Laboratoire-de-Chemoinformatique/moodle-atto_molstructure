@@ -52,7 +52,7 @@ $farea = "draft";
 $comp = "user";
 $mediatype = "image";
 $fileextension = "png";
-$contextid_user = context_user::instance($USER->id)->id;
+$contextiduser = context_user::instance($USER->id)->id;
 
 // Make our filerecord.
 $record            = new stdClass();
@@ -62,7 +62,7 @@ $record->filepath  = $filepath;
 $record->itemid    = $itemid;
 $record->license   = $CFG->sitedefaultlicense;
 $record->author    = fullname($USER);
-$record->contextid = $contextid_user;
+$record->contextid = $contextiduser;
 $record->userid    = $USER->id;
 $record->source    = '';
 
@@ -71,9 +71,9 @@ $filenamebase = "upfile_" . $requestid . ".";
 $filename         = $filenamebase . $fileextension;
 $record->filename = $filename;
 
-if ($fs->file_exists($contextid, $comp, $farea, $itemid, $filepath, $filename)) {
+if ($fs->file_exists($contextiduser, $comp, $farea, $itemid, $filepath, $filename)) {
     // Delete any existing draft files!
-    $file = $fs->get_file($contextid, $comp, $farea, $itemid, $filepath, $filename);
+    $file = $fs->get_file($contextiduser, $comp, $farea, $itemid, $filepath, $filename);
     $file->delete();
     // Check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes!
     array_push($return['messages'], "File already existed, it has been rewritten. " );
