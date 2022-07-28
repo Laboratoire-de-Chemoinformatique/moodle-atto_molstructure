@@ -13,3 +13,4 @@ Moodle plugin allowing to add a chemical structure or reaction as an image witho
 ## Licence
 
 GNU GPL v3 or later 
+

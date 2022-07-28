@@ -159,7 +159,6 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
         var params = "datatype=uploadfile";
         params += "&filedata=" + encodeURIComponent(filedata);
         params += "&requestid=" + filename;
-        params += "&contextid=" + this._usercontextid;
         params += "&itemid=" + this._itemid;
         params += "&sesskey=" + M.cfg.sesskey;
         xhr.open("POST", M.cfg.wwwroot +

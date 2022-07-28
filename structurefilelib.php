@@ -36,7 +36,6 @@ require_once($CFG->dirroot . '/lib/editor/atto/plugins/molstructure/lib.php');
 $datatype   = optional_param('datatype', "", PARAM_TEXT);
 $filedata   = optional_param('filedata', "", PARAM_TEXT); // Nature of value depends on datatype, maybe path.
 $requestid  = optional_param('requestid', "", PARAM_TEXT); // File or dir hash.
-$contextid  = optional_param('contextid', 0, PARAM_INT);
 $itemid     = optional_param('itemid', 0, PARAM_INT); // The id of the module.
 
 header("Content-type: text/xml");
@@ -53,6 +52,7 @@ $farea = "draft";
 $comp = "user";
 $mediatype = "image";
 $fileextension = "png";
+$contextid_user = context_user::instance($USER->id)->id;
 
 // Make our filerecord.
 $record            = new stdClass();
@@ -62,7 +62,7 @@ $record->filepath  = $filepath;
 $record->itemid    = $itemid;
 $record->license   = $CFG->sitedefaultlicense;
 $record->author    = fullname($USER);
-$record->contextid = $contextid;
+$record->contextid = $contextid_user;
 $record->userid    = $USER->id;
 $record->source    = '';
 
