@@ -1,0 +1,23 @@
+--- ChemDoodleWeb-9.4.0/src/ChemDoodleWeb-uis-unpacked.js	2022-01-02 14:33:42.000000000 +0100
++++ ChemDoodleWeb-uis-unpacked.js	2023-09-14 10:43:34.869372506 +0200
+@@ -21481,9 +21481,9 @@
+ 			if (sketcher.useServices) {
+ 				sketcher.dialogManager.saveDialog.clear();
+ 			} else if (sketcher.oneMolecule) {
+-				sketcher.dialogManager.saveDialog.getTextArea().val(c.writeMOL(sketcher.molecules[0]));
++				sketcher.dialogManager.saveDialog.getTextArea().val(c.writeMOL(sketcher.molecules[0], sketcher.shapes));
+ 			} else if (sketcher.lasso.isActive()) {
+-				sketcher.dialogManager.saveDialog.getTextArea().val(c.writeMOL(sketcher.lasso.getFirstMolecule()));
++				sketcher.dialogManager.saveDialog.getTextArea().val(c.writeMOL(sketcher.lasso.getFirstMolecule(), sketcher.shapes));
+ 			}
+ 			sketcher.dialogManager.saveDialog.open();
+ 		});
+@@ -23577,7 +23577,7 @@
+ 			if (editor.useServices) {
+ 				editor.dialogManager.saveDialog.clear();
+ 			} else {
+-				editor.dialogManager.saveDialog.getTextArea().val(c.writeMOL(editor.molecules[0]));
++				editor.dialogManager.saveDialog.getTextArea().val(c.writeMOL(editor.molecules[0], editor.shapes));
+ 			}
+ 			editor.dialogManager.saveDialog.open();
+ 		});
