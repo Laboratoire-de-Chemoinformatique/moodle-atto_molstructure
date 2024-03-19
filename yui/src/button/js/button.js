@@ -31,7 +31,6 @@
 var COMPONENTNAME = 'atto_molstructure',
     IFRSOURCE = M.cfg.wwwroot + '/lib/editor/atto/plugins/molstructure/canvas.html',
     IFID = 'canvas',
-    LOGNAME = 'atto_molstructure',
     SUBMITID = 'submit',
     CSS = {
         INPUTSUBMIT: 'atto_media_urlentrysubmit',
@@ -68,18 +67,12 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
         var options = host.get('filepickeroptions');
         if (options.image && options.image.itemid) {
             this._itemid = options.image.itemid;
-        } else {
-            Y.log(
-                'Plugin MolStructure Anywhere not available because itemid is missing.',
-                'warn', LOGNAME);
-            return;
         }
 
         // If we don't have the capability to view then give up.
         if (this.get('disabled')) {
             return;
         }
-
         // Add the structure icon/buttons
         this.addButton({
             icon: 'icon',
@@ -173,17 +166,17 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
     _changeLangString: function (e) {
         e.preventDefault();
         function update_lang_string() {
-            var iframBody = $('#' + IFID);
-            var buttoncontent = iframBody.contents();
+            var iframBody = document.querySelector('#' + IFID);
+            var buttoncontent = iframBody.contentDocument;
 
-            var button = buttoncontent.find('#button-size-button');
-            button[0].firstChild.data =(M.util.get_string('resize', COMPONENTNAME));
+            var button = buttoncontent.querySelector('#button-size-button');
+            button.firstChild.data =(M.util.get_string('resize', COMPONENTNAME));
 
-            var height_input = buttoncontent.find('#label_height_input_molstructure');
-            height_input[0].firstChild.data =(M.util.get_string('height', COMPONENTNAME));
+            var height_input = buttoncontent.querySelector('#label_height_input_molstructure');
+            height_input.firstChild.data =(M.util.get_string('height', COMPONENTNAME));
 
-            var width_input = buttoncontent.find('#label_width_input_molstructure');
-            width_input[0].firstChild.data =(M.util.get_string('width', COMPONENTNAME));
+            var width_input = buttoncontent.querySelector('#label_width_input_molstructure');
+            width_input.firstChild.data =(M.util.get_string('width', COMPONENTNAME));
         }
         update_lang_string();
     },
@@ -198,10 +191,10 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
 
         function test(thefilename) {
             // Getting the viewer canvas.
-            var iframBody = $('#' + IFID);
-            var buttoncontent = iframBody.contents();
-            var button = buttoncontent.find('#sketcher-viewer-atto');
-            var img_URL = button[0].toDataURL('image/svg');
+            var iframBody = document.querySelector('#' + IFID);
+            var buttoncontent = iframBody.contentDocument;
+            var button = buttoncontent.querySelector('#sketcher-viewer-atto');
+            var img_URL = button.toDataURL('image/svg');
 
             referringpage._uploadFile(img_URL, filename);
             var wwwroot = M.cfg.wwwroot;
