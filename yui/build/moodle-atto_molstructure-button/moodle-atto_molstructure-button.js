@@ -34,6 +34,7 @@ var COMPONENTNAME = 'atto_molstructure',
     IFRSOURCE = M.cfg.wwwroot + '/lib/editor/atto/plugins/molstructure/canvas.html',
     IFID = 'canvas',
     SUBMITID = 'submit',
+    LOGNAME = 'atto_molstructure',
     CSS = {
         INPUTSUBMIT: 'atto_media_urlentrysubmit',
         HGT: 'height: 68vh;',
@@ -190,30 +191,33 @@ Y.namespace('M.atto_molstructure').Button = Y.Base.create('button', Y.M.editor_a
         var thefilename = "upfile_" + filename + ".png";
         var divContent = '';
         var referringpage = this;
+        // Getting the viewer canvas.
+        var iframBody = document.querySelector('#' + IFID);
+        var buttoncontent = iframBody.contentDocument;
+        var button = buttoncontent.querySelector('#sketcher-viewer-atto');
+        var img_URL = button.toDataURL('image/svg');
 
-        function test(thefilename) {
-            // Getting the viewer canvas.
-            var iframBody = document.querySelector('#' + IFID);
-            var buttoncontent = iframBody.contentDocument;
-            var button = buttoncontent.querySelector('#sketcher-viewer-atto');
-            var img_URL = button.toDataURL('image/svg');
-
+        var uploadImagePromise = new Y.Promise(function (resolve) {
             referringpage._uploadFile(img_URL, filename);
             var wwwroot = M.cfg.wwwroot;
             var filesrc = wwwroot + '/draftfile.php/' + referringpage._usercontextid +
-                '/user/draft/' + referringpage._itemid + '/' + thefilename;
+              '/user/draft/' + referringpage._itemid + '/' + thefilename;
             divContent = "<img name=\"pict\" src=\"" + filesrc + "\" alt=\"ChemDoodle PNG\"/>";
-            referringpage.editor.focus();
-            referringpage.get('host').insertContentAtFocusPoint(divContent);
-            referringpage.markUpdated();
-        }
-
-        test(thefilename);
-        this.getDialogue({
+            resolve();
+        });
+        var currentDialogue = this.getDialogue({
             focusAfterHide: null
-        }).hide();
+        });
+        uploadImagePromise.then(
+          function () {
+              referringpage.editor.focus();
+              referringpage.get('host').insertContentAtFocusPoint(divContent);
+              referringpage.markUpdated();
+              currentDialogue.hide();
+          },
+          function(){
+        });
     }
-
 }, {
     ATTRS: {
         disabled: {
